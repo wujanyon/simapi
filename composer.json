@@ -1,0 +1,20 @@
+{
+    "name": "wujanyon/simapi",
+    "version": "1.0.1",
+    "description": "a simple single file application progam for PHP API",
+    "require": {
+        "catfan/medoo": "^1.5",
+        "palepurple/rate-limit": "^2.0",
+        "noahbuscher/macaw": "dev-master",
+        "webgeeker/validation": "^0.5.3",
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+        },
+        "files":[
+            "app\\helpers.php",
+            "app\\router.php"
+        ]
+    }
+}
