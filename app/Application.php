@@ -59,19 +59,22 @@ class Application
 		$message = $exception->getCode().' '.$exception->getMessage().' in '.$exception->getFile().':'.$exception->getLine();
 		$this->log($message,'error');
 		if($exception instanceof \WebGeeker\Validation\ValidationException){
-			$this->response(1000,$this->config['debug']?$message:'param error:'.$exception->getMessage());
+			$this->response(400,$this->config['debug']?$message:'param error:'.$exception->getMessage());
 		}elseif ($exception instanceof \App\RepException) {
 			$this->response($exception->getCode(), $this->config['debug']?$message:$exception->getMessage());
 		}elseif ($exception instanceof \ErrorException) {
 			header($_SERVER['SERVER_PROTOCOL'].' 500 Unknown Error');
-			$this->response(5000,$this->config['debug']?$message:'Unknown Error');
+			$this->response(500,$this->config['debug']?$message:'Unknown Error');
 		}elseif ($exception instanceof \PDOException) {
 			$this->log($this->db?$this->db->log():$exception->getMessage(),'error');
 			header($_SERVER['SERVER_PROTOCOL'].' 500 Unknown Error');
-			$this->response(5000,$this->config['debug']?$message:'Unknown Error');
+			$this->response(500,$this->config['debug']?$message:'Unknown Error');
+		}elseif ($exception instanceof NotFoundException) {
+			header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+			$this->response(404,'NotFound');
 		}else{
 			header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-			$this->response(4004,$this->config['debug']?$message:'Not Found And Unknown Error');
+			$this->response(404,$this->config['debug']?$message:'Not Found And Unknown Error');
 		}
 	}
 
@@ -118,7 +121,7 @@ class Application
     public function json($data,$option=320)
     {
         $str_json = is_array($data)?json_encode($data,$option):$data;
-        $this->log('response:'.var_export($str_json),true);
+        $this->log('response:'.var_export($str_json,true));
         header("Content-Type: application/json;charset=utf8");
         exit($str_json);
     }
