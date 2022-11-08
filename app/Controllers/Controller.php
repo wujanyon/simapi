@@ -85,4 +85,25 @@ class Controller
     {
         return  sendSocket($message, $address, $port);
     }
+
+    /**
+     * reids 锁
+     */
+    protected function ttlLock($key, $value, $ttl=1)
+    {
+       return app()->getRedis()->set($key,$value, ['NX', 'EX' =>intval($ttl)]);
+    }
+    /**
+     * reids 解锁
+     */
+    protected function unLock($key, $value)
+    {
+        $script = '
+        if redis.call("get",KEYS[1]) == ARGV[1] then
+            return redis.call("del",KEYS[1])
+        else
+            return 0
+        end';
+       return app()->getRedis()->eval($script, [$key, $value],1);
+    }
 }
